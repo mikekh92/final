@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="studyGroupMemberMapper">
+	<insert id="insertStudyGroupMember"
+		parameterType="studyGroupMember">
+		INSERT INTO STUDYGROUPMEMBER
+		VALUES
+		(SEQ_SGM_NO.NEXTVAL,(SELECT SG_APPLY_NICK
+		FROM STUDYGROUPAPPLY
+		WHERE SG_APPLY_NO = #{sgaApplyNo}), #{sgNo})
+	</insert>
+
+	<insert id="insertOwner" parameterType="studyGroupMember">
+		INSERT INTO
+		STUDYGROUPMEMBER VALUES(SEQ_SGM_NO.NEXTVAL, #{sg.sgOwnerNick},
+		#{studyGroup.sgNo})
+	</insert>
+
+	<select id="memberList" resultType="studyGroupMember">
+		SELECT *
+		FROM STUDYGROUPMEMBER
+		WHERE SGM_SG_NO = #{sgNo}
+	</select>
+
+	<select id="memberCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM
+		STUDYGROUPMEMBER
+		WHERE SGM_SG_NO = #{sgNo}
+	</select>
+
+</mapper>

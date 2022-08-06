@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="studyGroupMapper">
+
+	<select id="nameCheck" resultType="_int">
+		SELECT COUNT(*)
+		FROM STUDYGROUP
+		WHERE SG_NAME = #{sgName}
+	</select>
+
+	<insert id="insertStudyGroup" parameterType="studyGroup">
+		INSERT INTO
+		STUDYGROUP
+		(
+		SG_NO,
+		SG_NAME,
+		SG_GOAL,
+		SG_CONTENT,
+		SG_OWNER_NICK,
+		SG_MAX,
+		SG_CURRENT,
+		SG_CATEGORY,
+		SG_LOCATION
+		)
+		VALUES
+		(
+		SEQ_SG_NO.NEXTVAL,
+		#{sgName},
+		#{sgGoal},
+		#{sgContent},
+		#{sgOwnerNick},
+		#{sgMax},
+		DEFAULT,
+		#{sgCategory},
+		#{sgLocation}
+		)
+	</insert>
+
+	<!-- 구대영 추가 -->
+	<select id="studyGroupDetail" resultType="studyGroup">
+		SELECT *
+		FROM STUDYGROUP
+		WHERE SG_NO = #{sgNo}
+		<!-- AND SG_STATUS = 'Y' -->
+	</select>
+
+	<select id="selectListCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM
+		STUDYGROUP
+		WHERE SG_STATUS = 'Y'
+	</select>
+
+	<select id="studyGroupList" resultType="studyGroup">
+		SELECT *
+		FROM STUDYGROUP
+		WHERE SG_STATUS = 'Y'
+		ORDER BY SG_ENROLLDATE DESC
+	</select>
+
+	<select id="oneStudyGroupList" resultType="studyGroup">
+		SELECT *
+		FROM
+		STUDYGROUP
+		WHERE ((SG_MAX - 1) = SG_CURRENT)
+		ORDER BY SG_ENROLLDATE DESC
+	</select>
+
+	<select id="studyGroupNoSelect" resultType="studyGroup">
+		SELECT SG_NO
+		FROM
+		STUDYGROUP
+		WHERE SG_NAME = #{sgName}
+	</select>
+
+	<select id="searchListCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM
+		STUDYGROUP
+		WHERE SG_NAME LIKE '%'||#{searchContent}||'%' OR SG_GOAL
+		LIKE
+		'%'||#{searchContent}||'%' OR SG_CONTENT LIKE
+		'%'||#{searchContent}||'%' OR SG_CATEGORY LIKE
+		'%'||#{searchContent}||'%'
+		ORDER BY SG_ENROLLDATE DESC
+	</select>
+
+	<select id="sgSearchList" resultType="studyGroup">
+		SELECT *
+		FROM STUDYGROUP
+		WHERE SG_NAME LIKE '%'||#{searchContent}||'%' OR SG_GOAL LIKE
+		'%'||#{searchContent}||'%' OR SG_CONTENT LIKE
+		'%'||#{searchContent}||'%' OR SG_CATEGORY LIKE
+		'%'||#{searchContent}||'%'
+		ORDER BY SG_ENROLLDATE DESC
+	</select>
+
+	<select id="max" resultType="_int">
+		SELECT SG_MAX
+		FROM STUDYGROUP
+		WHERE
+		SG_NO = #{sgNo}
+	</select>
+
+	<update id="sgCurrent">
+		UPDATE STUDYGROUP
+		SET SG_CURRENT = SG_CURRENT + 1
+		WHERE SG_NO = #{sgNo}
+	</update>
+
+	<select id="myStudyGroupList" resultType="studyGroup">
+		SELECT *
+		FROM STUDYGROUP
+		WHERE SG_NO IN (SELECT SGM_SG_NO
+		FROM STUDYGROUPMEMBER
+		WHERE SGM_NICK = #{userNick})
+		ORDER BY SG_ENROLLDATE DESC
+	</select>
+
+
+</mapper>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="message">
+
+	<select id="selectListCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM
+		MESSAGE
+		WHERE MSG_RECV = #{userNick} AND MSG_STATUS = 'Y'
+	</select>
+
+	<select id="selectSendListCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM
+		MESSAGE
+		WHERE MSG_SEND = #{userNick} AND MSG_STATUS = 'Y'
+	</select>
+
+	<select id="messageList" resultType="message">
+		SELECT MSG_NO, MSG_SEND,
+		MSG_RECV, TO_CHAR(MSG_SENDTIME, 'YY/MM/DD
+		HH24:MI:SS') AS MSG_SENDTIME,
+		MSG_CONTENT, MSG_ORIGIN_NAME,
+		MSG_CHANGE_NAME, MSG_STATUS
+		FROM MESSAGE
+		WHERE MSG_RECV = #{userNick}
+		AND MSG_STATUS = 'Y'
+		ORDER BY MSG_SENDTIME
+		DESC
+	</select>
+
+	<select id="selectMessageOne" resultType="message">
+		SELECT *
+		FROM MESSAGE
+		WHERE MSG_NO = #{msgNo} AND MSG_STATUS = 'Y'
+	</select>
+
+	<insert id="insertMessage" parameterType="message">
+		INSERT INTO MESSAGE
+		VALUES(SEQ_MSG_NO.nextval, #{msgSend}, #{msgRecv}, DEFAULT,
+		#{msgContent}, #{msgOriginName}, #{msgChangeName}, DEFAULT)
+	</insert>
+
+	<update id="deleteMessage">
+		UPDATE MESSAGE
+		SET MSG_STATUS = 'N'
+		WHERE MSG_NO =
+		#{msgNo}
+	</update>
+
+	<update id="deleteCheckedMessage">
+		UPDATE MESSAGE
+		SET MSG_STATUS = 'N'
+		WHERE MSG_NO IN
+		<foreach collection="arr" item="item" index="index"
+			separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<update id="reportMessage">
+		UPDATE MESSAGE
+		SET MSG_STATUS = 'N'
+		WHERE MSG_NO =
+		#{msgNo}
+	</update>
+
+	<update id="reportCheckedMessage">
+		UPDATE MESSAGE
+		SET MSG_STATUS = 'N'
+		WHERE MSG_NO IN
+		<foreach collection="arr" item="item" index="index"
+			separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<select id="messageSendList" resultType="message">
+		SELECT *
+		FROM MESSAGE
+		WHERE MSG_SEND = #{userNick} AND MSG_STATUS = 'Y'
+		ORDER BY MSG_SENDTIME
+		DESC
+	</select>
+
+	<insert id="sendAcceptMessage" parameterType="message">
+		INSERT INTO MESSAGE
+		VALUES(SEQ_MSG_NO.nextval,
+		(SELECT SG_OWNER_NICK
+		FROM STUDYGROUP
+		WHERE SG_NO = #{sgNo}),
+		(SELECT SG_APPLY_NICK
+		FROM
+		STUDYGROUPAPPLY
+		WHERE SG_APPLY_NO = #{sgaApplyNo}
+		), DEFAULT, (SELECT SG_NAME
+		FROM STUDYGROUP
+		WHERE SG_NO =
+		#{sgNo})||'스터디에 수락되었습니다', NULL, NULL, DEFAULT)
+	</insert>
+
+	<insert id="sendRejectMessage" parameterType="message">
+		INSERT INTO MESSAGE
+		VALUES(SEQ_MSG_NO.nextval,
+		(SELECT SG_OWNER_NICK
+		FROM STUDYGROUP
+		WHERE SG_NO = #{sgNo}),
+		(SELECT SG_APPLY_NICK
+		FROM
+		STUDYGROUPAPPLY
+		WHERE SG_APPLY_NO = #{sgaApplyNo}
+		), DEFAULT, (SELECT SG_NAME
+		FROM STUDYGROUP
+		WHERE SG_NO =
+		#{sgNo})||'스터디에 거절되었습니다', NULL, NULL, DEFAULT)
+	</insert>
+
+
+</mapper>

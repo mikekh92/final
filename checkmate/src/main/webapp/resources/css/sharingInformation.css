@@ -1,0 +1,32 @@
+html, body {
+	height: 100%;
+}
+.back-image {
+	height: 100vh;
+/* 	position: relative; */
+/* 	z-index: 1; */
+}
+
+
+/* .back-image::before { */
+/* 	background: url(resources/img/slide/slide-1.jpg); */
+/* 	top: 0; */
+/* 	left: 0; */
+/* 	position: absolute; */
+/* 	background-size: 100%; */
+/* 	opacity: 0.5 !important; */
+/* 	filter: alpha(opacity = 50); */
+/* 	z-index: -1; */
+/* 	content: ""; */
+/* 	width: 100%; */
+/* 	height: 900px; */
+/* } */
+
+.table>*>tr>* {
+	text-align: center;
+}
+
+.btn-group {
+	float: right;
+	margin-right: 30px;
+}

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="reservationMapper">
+
+	<resultMap type="reservation" id="reservationResultSet">
+		<result column="RESERVATION_NO" property="reservationNo"/>
+		<result column="RESERVATION_DATE" property="reservationDate"/>
+		<result column="RESERVATION_USER" property="reservationUser"/>
+		<result column="RESERVATION_START_TIME" property="reservationStartTime"/>
+		<result column="RESERVATION_USED_TIME" property="reservationUsedTime"/>
+		<result column="ROOM_NO" property="roomNo"/>
+		<result column="ROOM_CENTER_NAME" property="roomCenterName"/>
+		<result column="ROOM_NAME" property="roomName"/>
+		<result column="ROOM_SIZE" property="roomSize"/>
+	</resultMap>
+	
+	<select id="home" resultMap="reservationResultSet">
+		SELECT ROOM_CENTER_NAME
+		FROM ROOM
+		GROUP BY ROOM_CENTER_NAME
+		ORDER BY ROOM_CENTER_NAME
+	</select>
+	<select id="selectRoomSize" resultMap="reservationResultSet">
+		SELECT ROOM_SIZE
+		FROM ROOM
+		WHERE ROOM_CENTER_NAME = #{roomCenterName}
+		GROUP BY ROOM_SIZE
+		ORDER BY ROOM_SIZE
+	</select>  	
+	<select id="selectRoomName" resultMap="reservationResultSet">
+		SELECT ROOM_NAME
+		FROM ROOM
+		WHERE ROOM_CENTER_NAME = #{roomCenterName}
+		AND ROOM_SIZE = #{roomSize}
+		ORDER BY ROOM_NAME
+	</select>
+	<insert id="insertReservation" parameterType="reservation">
+		INSERT INTO RESERVATION (
+						RESERVATION_NO
+					   ,RESERVATION_DATE
+					   ,RESERVATION_USER
+					   ,RESERVATION_START_TIME
+					   ,RESERVATION_USED_TIME
+					   ,ROOM_NO
+							)
+				VALUES(
+						SEQ_RESERVATION_NO.NEXTVAL
+					   ,#{reservationDate}
+					   ,#{reservationUser}
+					   ,#{reservationStartTime}
+					   ,#{reservationUsedTime}
+					   ,#{roomNo}	
+							)
+	</insert>
+	<select id="selectRoomNo" resultType="int">
+		SELECT ROOM_NO
+		FROM ROOM
+		WHERE ROOM_CENTER_NAME = #{roomCenterName}
+		AND ROOM_SIZE = #{roomSize}
+		AND ROOM_NAME = #{roomName}
+	</select>
+	
+	<select id="selectReservationList" resultMap="reservationResultSet">
+		SELECT *
+		FROM RESERVATION
+		WHERE ROOM_NO = #{roomNo}
+		AND RESERVATION_DATE =#{reservationDate}
+	</select>
+	<select id="selectMyReservationList" resultMap="reservationResultSet">
+		SELECT RESERVATION_NO,ROOM_CENTER_NAME,RESERVATION_DATE,RESERVATION_START_TIME,RESERVATION_USED_TIME,ROOM_NAME,ROOM_SIZE
+		FROM RESERVATION R, ROOM M
+		WHERE R.ROOM_NO=M.ROOM_NO
+        AND RESERVATION_USER = #{reservationUser}
+        ORDER BY RESERVATION_NO
+	</select>
+	<select id="selectListCount" resultType="int">
+		SELECT COUNT(*)
+		FROM RESERVATION
+		WHERE RESERVATION_USER = #{reservationUser}
+	</select>
+	<delete id="deleteReservation">
+		DELETE FROM RESERVATION
+		WHERE RESERVATION_NO = #{reservationNoDelete}
+	</delete>
+	
+</mapper>

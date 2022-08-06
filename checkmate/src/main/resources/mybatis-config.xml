@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL" />
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+	</settings>
+	<typeAliases>
+		<typeAlias type="com.kh.checkmate.message.model.vo.Message" alias="message" />
+		<typeAlias type="com.kh.checkmate.member.model.vo.Member" alias="member" />
+		<typeAlias type="com.kh.checkmate.board.sharingInformation.model.vo.SharingInformation" alias="SharingInformation" />
+		<typeAlias type="com.kh.checkmate.board.sharingInformation.model.vo.Reply" alias="reply"/>
+		<typeAlias type="com.kh.checkmate.location.model.vo.Location" alias="location"/>
+		<typeAlias type="com.kh.checkmate.studyGroup.model.vo.StudyGroup" alias="studyGroup" />
+		<typeAlias type="com.kh.checkmate.studyGroupApply.model.vo.StudyGroupApply" alias="studyGroupApply" />
+		<typeAlias type="com.kh.checkmate.studyGroupMember.model.vo.StudyGroupMember" alias="studyGroupMember" />
+		<typeAlias type="com.kh.checkmate.reservation.model.vo.Reservation" alias="reservation"/>
+		<typeAlias type="com.kh.checkmate.board.cs.model.vo.notice" alias="notice"/>
+		<typeAlias type="com.kh.checkmate.board.faq.model.vo.faq" alias="faq"/>
+	</typeAliases>
+			
+	<mappers>
+		<mapper resource="/mappers/message/message-mapper.xml" />
+		<mapper resource="/mappers/member/member-mapper.xml" />
+		<mapper resource="/mappers/sharingInformation/sharingInformation-mapper.xml" />
+		<mapper resource="/mappers/location/location-mapper.xml" />
+		<mapper resource="/mappers/studyGroup/studyGroup-mapper.xml" />
+		<mapper resource="/mappers/jobSharingInformation/jobSharingInformation-mapper.xml" />
+		<mapper resource="/mappers/location/location-mapper.xml" />
+		<mapper resource="/mappers/studyGroup/studyGroup-mapper.xml"/>
+		<mapper resource="/mappers/studyGroupApply/studyGroupApply-mapper.xml" />
+		<mapper resource="/mappers/studyGroupMember/studyGroupMember-mapper.xml" />
+		<mapper resource="/mappers/reservation/reservation-mapper.xml"/>
+		<mapper resource="/mappers/notice/notice-mapper.xml"/>
+		<mapper resource="/mappers/faq/faq-mapper.xml"/>
+	</mappers>
+</configuration>

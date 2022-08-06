@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sharingInformationMapper">
+	<select id="selectListCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM
+		INFORMATION_TB
+		WHERE INFORMATION_STATUS = 'Y'
+		AND INFORMATION_CATEGORY =
+		'정보공유'
+	</select>
+
+	<resultMap type="SharingInformation" id="siResultSet">
+		<result column="INFORMATION_NO" property="informationNo" />
+		<result column="USER_NO" property="userNo" />
+		<result column="USER_ID" property="userId" />
+		<result column="USER_NICK" property="userNick" />
+		<result column="INFORMATION_CATEGORY"
+			property="informationCategory" />
+		<result column="INFORMATION_TITLE" property="informationTitle" />
+		<result column="INFORMATION_CONTENT"
+			property="informationContent" />
+		<result column="INFORMATION_DATE" property="informationDate" />
+
+		<result column="INFORMATION_VIEW" property="informationView" />
+		<result column="INFORMATION_ORIGIN_NAME"
+			property="informationOriginName" />
+		<result column="INFORMATION_CHANGE_NAME"
+			property="informationChangeName" />
+			
+			<result column="ROWNUM" property="informationListNum" />
+	</resultMap>
+
+	<select id="selectList" resultMap="siResultSet">
+		SELECT ROWNUM,IF.*
+		FROM
+		(SELECT
+		INFORMATION_NO,
+		USER_NO,
+		USER_ID,
+		USER_NICK,
+		INFORMATION_CATEGORY,
+		INFORMATION_TITLE,
+		INFORMATION_CONTENT,
+		INFORMATION_DATE,
+		INFORMATION_VIEW
+		FROM INFORMATION_TB
+		JOIN MEMBER M USING(USER_NO)
+		WHERE
+		INFORMATION_STATUS = 'Y'
+		AND
+		INFORMATION_CATEGORY = '정보공유'
+		ORDER BY
+		INFORMATION_DATE) IF
+		ORDER BY ROWNUM DESC
+	</select>
+
+	<insert id="insertBoard" parameterType="SharingInformation">
+		INSERT INTO
+		INFORMATION_TB(
+		INFORMATION_NO
+		,USER_NO
+		,INFORMATION_CATEGORY
+		,INFORMATION_TITLE
+		,INFORMATION_CONTENT
+		,INFORMATION_DATE
+		,INFORMATION_VIEW
+		,INFORMATION_STATUS
+		,INFORMATION_ORIGIN_NAME
+		,INFORMATION_CHANGE_NAME
+		)
+		VALUES(
+		SEQ_INFORMATION_NO.NEXTVAL
+		,#{userNo}
+		,#{informationCategory}
+		,#{informationTitle}
+		,#{informationContent}
+		,SYSDATE
+		,DEFAULT
+		,DEFAULT
+		,#{informationOriginName}
+		,#{informationChangeName}
+		)
+	</insert>
+
+	<update id="increaseCount" parameterType="_int">
+		UPDATE INFORMATION_TB
+		SET INFORMATION_VIEW = INFORMATION_VIEW + 1
+		WHERE
+		INFORMATION_STATUS =
+		'Y'
+		AND INFORMATION_NO = #{informationNo}
+	</update>
+
+	<select id="selectBoard" resultMap="siResultSet">
+		SELECT INFORMATION_NO,
+		USER_NO,
+		USER_ID,
+		USER_NICK,
+		INFORMATION_CATEGORY,
+		INFORMATION_TITLE,
+		INFORMATION_CONTENT,
+		INFORMATION_DATE,
+		INFORMATION_VIEW,
+		INFORMATION_ORIGIN_NAME,
+		INFORMATION_CHANGE_NAME
+		FROM INFORMATION_TB
+		JOIN MEMBER M USING(USER_NO)
+		WHERE INFORMATION_NO =
+		#{informationNo}
+	</select>
+
+	<update id="deleteBoard" parameterType="_int">
+		UPDATE INFORMATION_TB
+		SET
+		INFORMATION_STATUS='N'
+		WHERE INFORMATION_NO = #{informationNo}
+	</update>
+
+	<update id="updateBoard" parameterType="SharingInformation">
+		UPDATE INFORMATION_TB
+		SET
+		INFORMATION_TITLE = #{informationTitle}
+		,INFORMATION_CONTENT =
+		#{informationContent}
+		,INFORMATION_ORIGIN_NAME =
+		#{informationOriginName}
+		,INFORMATION_CHANGE_NAME =
+		#{informationChangeName}
+		WHERE INFORMATION_NO = #{informationNo}
+	</update>
+
+	<select id="searchList" resultMap="siResultSet">
+		SELECT INFORMATION_NO,
+		USER_NO,
+		USER_ID,
+		USER_NICK,
+		INFORMATION_CATEGORY,
+		INFORMATION_TITLE,
+		INFORMATION_CONTENT,
+		INFORMATION_DATE,
+		INFORMATION_VIEW
+		FROM
+		INFORMATION_TB
+		JOIN MEMBER M USING(USER_NO)
+		WHERE INFORMATION_STATUS =
+		'Y'
+		AND INFORMATION_CATEGORY = '정보공유'
+		AND INFORMATION_TITLE LIKE
+		'%'||#{searchContent}||'%'
+		ORDER BY
+		INFORMATION_DATE DESC
+	</select>
+
+
+	<resultMap type="reply" id="replyResultSet">
+		<result column="REPLY_NO" property="replyNo"/>
+		<result column="USER_NICK" property="replyWriter" />
+		<result column="USER_NO" property="refUno" />
+		<result column="USER_CHANGE_PROFILE" property="replyProfile" />
+		<result column="REPLY_CONTENT" property="replyContent" />
+		<result column="REPLY_DATE" property="replyDate" />
+	</resultMap>
+
+
+	<select id="selectReplyList" resultMap="replyResultSet"
+		parameterType="_int">
+		SELECT USER_NICK,
+		REPLY_CONTENT,
+		USER_CHANGE_PROFILE,
+		TO_CHAR(REPLY_DATE,'YYYY-MM-DD HH24:MI:SS') AS "REPLY_DATE"
+		FROM INFORMATION_REPLY_TB
+		JOIN MEMBER ON (USER_NO=REF_UNO)
+		WHERE REF_BNO = #{informationNo}
+		AND
+		REPLY_STATUS = 'Y'
+
+		ORDER BY REPLY_DATE
+	</select>
+
+	<insert id="insertReply" parameterType="reply">
+		INSERT INTO INFORMATION_REPLY_TB
+		(REPLY_NO,REPLY_CONTENT,REF_BNO,REF_UNO,REPLY_DATE,REPLY_STATUS)
+		VALUES
+		(SEQ_REPLY_NO.NEXTVAL,#{replyContent},#{refBno},#{refUno},SYSDATE,DEFAULT)
+	</insert>
+
+	<select id="checkNo" resultMap="replyResultSet">
+		SELECT USER_NO
+		FROM MEMBER
+		WHERE
+		USER_ID = #{replyWriter}
+	</select>
+	
+	<select id="checkNick" resultMap="replyResultSet">
+		SELECT USER_NO
+		FROM MEMBER
+		WHERE
+		USER_NICK = #{replyWriter}
+	</select>
+
+	<select id="topBoard" resultMap="siResultSet">
+		SELECT ROWNUM,IF.*
+		FROM
+		(SELECT
+		INFORMATION_NO
+		,INFORMATION_TITLE
+		,INFORMATION_VIEW
+		FROM INFORMATION_TB
+		WHERE INFORMATION_CATEGORY = '정보공유'
+		AND INFORMATION_STATUS = 'Y'
+		ORDER
+		BY INFORMATION_VIEW DESC) IF
+		WHERE ROWNUM BETWEEN 1 AND 5
+	</select>
+
+	<select id="topReply" resultMap="siResultSet">
+		SELECT ROWNUM,IF.*
+		FROM
+		(SELECT
+		INFORMATION_NO
+		,INFORMATION_TITLE
+		,INFORMATION_REPLY_COUNT
+		FROM
+		INFORMATION_TB
+		WHERE INFORMATION_CATEGORY = '정보공유'
+		AND
+		INFORMATION_STATUS = 'Y'
+		ORDER BY INFORMATION_REPLY_COUNT DESC) IF
+		WHERE ROWNUM BETWEEN 1 AND 5
+	</select>
+
+	<update id="replyCount">
+		UPDATE INFORMATION_TB
+		SET INFORMATION_REPLY_COUNT =
+		INFORMATION_REPLY_COUNT + 1
+		WHERE INFORMATION_STATUS = 'Y'
+		AND
+		INFORMATION_NO = #{refBno}
+	</update>
+
+	<update id="deleteReply">
+		UPDATE INFORMATION_REPLY_TB
+		SET REPLY_STATUS = 'N'
+		WHERE REF_UNO = #{refUno}
+		AND REPLY_CONTENT = #{replyContent}
+	</update>
+
+	<update id="editReply">
+		UPDATE INFORMATION_REPLY_TB
+		SET REPLY_CONTENT =
+		#{editContent}
+		WHERE REF_UNO = #{refUno}
+		AND REPLY_CONTENT =
+		#{replyContent}
+	</update>
+
+	<!-- 구대영 -->
+	<select id="searchListCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM
+		INFORMATION_TB
+		WHERE INFORMATION_CATEGORY = '정보공유' AND INFORMATION_TITLE LIKE '%'||#{searchContent}||'%'
+		OR INFORMATION_CONTENT LIKE '%'||#{searchContent}||'%'
+		ORDER BY INFORMATION_DATE DESC
+	</select>
+	
+		<select id="siSearchList" resultMap="siResultSet">
+		SELECT *
+		FROM
+		INFORMATION_TB
+		WHERE INFORMATION_CATEGORY = '정보공유' AND INFORMATION_TITLE LIKE '%'||#{searchContent}||'%'
+		OR INFORMATION_CONTENT LIKE '%'||#{searchContent}||'%'
+		ORDER BY INFORMATION_DATE DESC
+	</select>
+
+</mapper>

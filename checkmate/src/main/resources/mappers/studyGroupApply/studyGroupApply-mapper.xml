@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="studyGroupApplyMapper">
+
+	<insert id="insertStudyGroupApply"
+		parameterType="studyGroupApply">
+		INSERT INTO
+		STUDYGROUPAPPLY
+		(
+		SG_APPLY_NO,
+		SG_APPLY_NICK,
+		SG_APPLY_SG_NO,
+		SG_APPLY_CONTENT,
+		SG_APPLY_STATUS
+		)
+		VALUES
+		(
+		SEQ_SG_APPLY_NO.nextval,
+		#{sgApplyNick},
+		#{sgApplySgNo},
+		#{sgApplyContent},
+		'S'
+		)
+	</insert>
+
+	<select id="studyGroupApplyList" resultType="studyGroupApply">
+		SELECT *
+		FROM
+		STUDYGROUPAPPLY
+		WHERE
+		SG_APPLY_SG_NO =
+		#{sgNo} AND
+		SG_APPLY_STATUS = 'S'
+	</select>
+
+	<update id="acceptStudyGroup">
+		UPDATE STUDYGROUPAPPLY
+		SET SG_APPLY_STATUS = 'Y'
+		WHERE
+		SG_APPLY_NO = #{sgaApplyNo}
+	</update>
+
+	<update id="rejectStudyGroup">
+		UPDATE STUDYGROUPAPPLY
+		SET SG_APPLY_STATUS = 'N'
+		WHERE
+		SG_APPLY_NO = #{sgaApplyNo}
+	</update>
+
+	<select id="applyCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM
+		STUDYGROUPAPPLY
+		WHERE SG_APPLY_SG_NO = #{sgNo} AND SG_APPLY_STATUS =
+		'S'
+	</select>
+
+</mapper>

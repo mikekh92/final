@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="locationMapper">
+	<select id="selectListCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM LOCATION_TB
+        WHERE USER_NO = #{userNo}
+	</select>
+		
+	<insert id="insertCoordinate" parameterType="location">
+		INSERT INTO LOCATION_TB(
+					LOCATION_NO,
+					USER_NO,
+					LOCATION_LATITUDE,
+					LOCATION_LONGITUDE,
+					LOCATION_DATE
+		)
+		VALUES (
+			SEQ_LOCATION_NO.NEXTVAL,
+			#{userNo},
+			#{locationLatitude},
+			#{locationLongitude},
+			SYSDATE
+		)
+	</insert>
+	
+	<update id="updateCoordinate" parameterType="location">
+		UPDATE LOCATION_TB
+		SET LOCATION_LATITUDE = #{locationLatitude},
+			LOCATION_LONGITUDE = #{locationLongitude}
+		WHERE USER_NO = #{userNo}
+	</update>
+	
+		
+	<resultMap type="location" id="loResultSet">
+		<result column="LOCATION_LATITUDE" property="locationLatitude"/>
+		<result column="LOCATION_LONGITUDE" property="locationLongitude"/>
+	</resultMap>
+	
+	<select id="selectMapList" resultMap="loResultSet">
+		SELECT LOCATION_LATITUDE,
+		       LOCATION_LONGITUDE
+		FROM LOCATION_TB
+	</select>
+</mapper>
